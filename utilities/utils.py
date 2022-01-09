@@ -1,8 +1,10 @@
+import csv
 import re
 
 import pandas as pd
 from sklearn import preprocessing
-from sklearn.preprocessing import LabelEncoder
+
+from utilities.conf import label_encoder
 
 
 def read_data_csv(file):
@@ -11,13 +13,16 @@ def read_data_csv(file):
 
 
 def encode_languages(data):
-    label_encoder = LabelEncoder()
     return label_encoder.fit_transform(data)
+
+
+def decode_languages(data):
+    return label_encoder.inverse_transform(data)
 
 
 def clean_text(text):
     text = re.sub(r'[!@#$(),"%^*?:;~`0-9]', ' ', text)
-    # text = re.sub(r'[[]]', ' ', text)
+    text = re.sub(r'[[]]', ' ', text)
     text = text.lower()
     return text
 
@@ -32,6 +37,25 @@ def create_data_list(texts):
 
 def get_column_data(data, column):
     return data[column]
+
+
+def write_to_csv(file, text, languagues, predicted):
+    row_list = []
+    with open(file, mode='w') as employee_file:
+        row_list.append("Text")
+        row_list.append("Actual Language")
+        row_list.append("Predicted Language")
+        employee_writer = csv.writer(employee_file, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        employee_writer.writerow(row_list)
+        row_list.clear()
+
+        for i in range(len(text)):
+            row_list.clear()
+            row_list.append(text[i])
+            row_list.append(languagues[i])
+            row_list.append(predicted[i])
+            employee_writer = csv.writer(employee_file, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+            employee_writer.writerow(row_list)
 
 
 def word_extraction(sentence):
@@ -67,66 +91,11 @@ def tokenize(sentences):
     return words
 
 
-# str = "marian george nu prea stie stie python. Www  weee w w w www  wd ew  w wwfdwdfww."
-# str2 =  "marian stie george 112 nu prea  stie @ //  $#python ## %%."
-# wordss = tokenize(str)
-# print("tokenize: ", wordss)
-# cleaned_text = word_extraction(str2)
-# print("word_extaction: ", cleaned_text)
-
-def read_sentences(file):
-    """
-        Function reads a file and count number of sentences.
-        Return a list of sentences and number of sentences.
-        :param file: string - File name
-        :return: number_sentences - Integer
-                 text - List<string>
-    """
-    number_sentences = 0
-    text = []
-    fil = open(file, "r", encoding="utf-8")
-    for sentences in fil:
-        number_sentences += 1
-        text.append(sentences)
-
-    return number_sentences, text
-
-
-# print("numbe1 sent: ", number_sentences)
-# print("numbe1 trainingdata: ", training_data)
-# print("numbe2 sent: ", number_sentences2)
-# print("numbe2 testinggdata: ", testing_data)
-
-
-def test(file):
-    """
-        Function reads a file, count number of sentences and extract ids of paragraphs and language codes.
-        Return number of sentences, ids and codes extracted.
-        :param file: string - File name
-        :return: number_sentences - Integer
-                 ids - List<string> - ids of paragraphs
-                 language_codes - List<string>
-    """
-    number_sentences = 0
-    language_codes = []
-    ids = []
-
-    with open(file, 'r+') as file:
-        for sentences in file:
-            i = sentences.split(None, 1)
-            idx = i[0]
-            ids.append(idx)
-            text = int(i[1])
-            number_sentences += 1
-            language_codes.append(text)
-    return number_sentences, ids, language_codes
-
-
 def normalize_data(train_data, test_data, type=None):
     """
         Function reads a file, count number of sentences and extract ids of paragraphs and language codes.
         Return number of sentences, ids and codes extracted.
-        :param  train_data: List<Integer> - the array of features for the data
+        :param  train_data: List<Integer> - the array of features for the train_data
                 test_data: List<Integer> - the array of the known languages
         :return: number_sentences - Integer
                 ids - List<string> - ids of paragraphs

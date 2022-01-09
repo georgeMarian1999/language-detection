@@ -1,8 +1,5 @@
 import numpy as np
 
-from sklearn.feature_extraction.text import CountVectorizer
-import pandas as pd
-
 from utilities.utils import tokenize
 
 
@@ -15,7 +12,6 @@ class BagOfWords:
     def build_vocabulary(self, train_data):
         for paragraph in train_data:
             for word in tokenize(paragraph):
-
                 if word not in self.vocab:
                     self.vocab[word] = len(self.words)
                     self.words.append(word)
