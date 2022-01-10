@@ -13,16 +13,16 @@ def run_unigram():
 
 
 def run_ngram():
-    accuracy_sc, cv = create_model_ngram(2)
+    accuracy_sc, cv = create_model_ngram(1)
     text, languages, predicted, accuracy, features = test_data_ngram("test_data/test_data_text.csv", cv)
-    write_to_csv("result/result_test_data_2gram.csv", text, languages, predicted)
-    languages_accuracy = get_feature_accuracy("result/result_test_data_2gram.csv", features)
-    write_accuracy_to_csv("result/language_accuracy_2gram.csv", languages_accuracy)
+    write_to_csv("result/result_test_data_ngram.csv", text, languages, predicted)
+    languages_accuracy = get_feature_accuracy("result/result_test_data_ngram.csv", features)
+    write_accuracy_to_csv("result/language_accuracy_ngram.csv", languages_accuracy)
     print("Accuracy of detecting from test data is ", accuracy)
 
 
 def main():
-    run_ngram()
+    run_unigram()
 
 
 if __name__ == '__main__':
