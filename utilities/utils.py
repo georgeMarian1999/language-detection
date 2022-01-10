@@ -41,12 +41,12 @@ def get_column_data(data, column):
 
 def write_to_csv(file, text, languagues, predicted):
     row_list = []
-    with open(file, mode='w') as employee_file:
+    with open(file, mode='w', encoding="utf-8") as employee_file:
         row_list.append("Text")
         row_list.append("Actual Language")
         row_list.append("Predicted Language")
-        employee_writer = csv.writer(employee_file, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-        employee_writer.writerow(row_list)
+        wr = csv.writer(employee_file, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        wr.writerow(row_list)
         row_list.clear()
 
         for i in range(len(text)):
@@ -54,8 +54,24 @@ def write_to_csv(file, text, languagues, predicted):
             row_list.append(text[i])
             row_list.append(languagues[i])
             row_list.append(predicted[i])
-            employee_writer = csv.writer(employee_file, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-            employee_writer.writerow(row_list)
+            wr = csv.writer(employee_file, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+            wr.writerow(row_list)
+
+def write_accuracy_to_csv(file, languages_accuracy):
+    row_list = []
+    with open(file, mode='w', encoding="utf-8") as employee_file:
+        row_list.append("Language")
+        row_list.append("Accuracy")
+        wr = csv.writer(employee_file, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        wr.writerow(row_list)
+        row_list.clear()
+
+        for language in languages_accuracy.keys():
+            row_list.clear()
+            row_list.append(language)
+            row_list.append(languages_accuracy[language])
+            wr = csv.writer(employee_file, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+            wr.writerow(row_list)
 
 
 def word_extraction(sentence):
@@ -90,31 +106,3 @@ def tokenize(sentences):
     words = sorted(list(set(words)))
     return words
 
-
-def normalize_data(train_data, test_data, type=None):
-    """
-        Function reads a file, count number of sentences and extract ids of paragraphs and language codes.
-        Return number of sentences, ids and codes extracted.
-        :param  train_data: List<Integer> - the array of features for the train_data
-                test_data: List<Integer> - the array of the known languages
-        :return: number_sentences - Integer
-                ids - List<string> - ids of paragraphs
-                     language_codes - List<string>
-    """
-    scaler = None
-    if type == 'standard':
-        scaler = preprocessing.StandardScaler()
-
-    elif type == 'min_max':
-        scaler = preprocessing.MinMaxScaler()
-
-    elif type == 'l1' or type == 'l2':
-        scaler = preprocessing.Normalizer(norm=type)
-
-    if scaler is not None:
-        scaler.fit(train_data)
-        scaled_train_data = scaler.transform(train_data)
-        scaled_test_data = scaler.transform(test_data)
-        return scaled_train_data, scaled_test_data
-    else:
-        return train_data, test_data
